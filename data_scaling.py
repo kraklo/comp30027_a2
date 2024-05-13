@@ -28,6 +28,8 @@ def scale(train_df, test_df, value_calc, scaler):
         # skip label column
         if attribute == 'imdb_score_binned':
             continue
+        if attribute == 'id':
+            continue
 
         # calculate values from TRAINING dataset
         values = value_calc(train_df, attribute)

@@ -80,7 +80,10 @@ def replace_strings(dataset, file_prefix):
     return dataset
 
 
-def preprocess(train_df, test_df):
+def preprocess():
+    train_df = pd.read_csv('project_data/train_dataset.csv')
+    test_df = pd.read_csv('project_data/test_dataset.csv')
+    
     # replace strings
     train_df = replace_strings(train_df, 'train')
     test_df = replace_strings(test_df, 'test')
@@ -96,14 +99,10 @@ def preprocess(train_df, test_df):
     # return train and test dfs scaled 
     return train_df_minmax, test_df_minmax, train_df_std, test_df_std
 
-# should work once strings are replaced with numerical values 
-# train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
-
 
 def main():
-    train_df = pd.read_csv('project_data/train_dataset.csv')
-    test_df = pd.read_csv('project_data/test_dataset.csv')
-    train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess(train_df, test_df)
+    
+    train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
 
 
 if __name__ == '__main__':
