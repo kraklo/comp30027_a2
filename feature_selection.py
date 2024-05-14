@@ -208,12 +208,15 @@ def filtering(features, labels, min_k, max_k, k_step, classifier):
         xs, ys = zip(*acc)
         plt.plot(xs, ys, label=label)
 
+    print("hello")
+
     plt.xlim(min_k, max_k)
     plt.title("Number of k-best features versus accuracy of classifier")
     plt.xlabel("n features")
     plt.ylabel("classifier accuracy")
     plt.legend(loc="upper right")
     plt.show()
+
 
 def main():
     

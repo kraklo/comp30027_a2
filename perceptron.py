@@ -11,6 +11,9 @@ RANDOM_STATE = 123
 
 def run_perceptron(features, labels, test_df):
     clf = Perceptron(random_state=RANDOM_STATE)
+
+    filtering(features, labels, 20, 300, 20, clf)
+
     clf.fit(features, labels)
     print(clf.score(features, labels))
 
@@ -38,6 +41,8 @@ def main():
     # pred_pca = run_perceptron(train_df_pca, train_df_labels, test_df_pca)
     # print(train_df_pca)
     # pred_pca.to_csv('p_pca.csv', columns=['id', 'imdb_score_binned'], index=False)
+
+    
 
     # All of these just give me all 2s as predictions like SVM??
 
