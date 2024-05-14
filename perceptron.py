@@ -10,6 +10,7 @@ from feature_selection import *
 RANDOM_STATE = 123
 
 def run_perceptron(features, labels, test_df):
+    print("hello")
     clf = Perceptron(random_state=RANDOM_STATE)
 
     filtering(features, labels, 20, 300, 20, clf)
