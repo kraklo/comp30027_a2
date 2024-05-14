@@ -15,10 +15,13 @@ def run_perceptron(features, labels, test_df):
 
     #filtering(features, labels, 20, 300, 20, clf)
     # uncomment if want kbest 
+    # 100 based on graph from filtering()
     selected_features_train, selected_features_test = select_kbest_features(100, f_classif, features, labels, test_df, clf)
 
+    score = cross_val_score(clf, features, labels, cv=5)
+    print(score.mean())
     clf.fit(selected_features_train, labels)
-    print(clf.score(selected_features_train, labels))
+    # print(clf.score(selected_features_train, labels))
 
     predictions = pd.DataFrame(clf.predict(selected_features_test))
     predictions.columns = ['imdb_score_binned']

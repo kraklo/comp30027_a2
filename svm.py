@@ -10,7 +10,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split, cross_val_score
 
 
-
 # Training - Evaluation
 # Find decision boundary that maximises distance of datapoints from the line. 
 # Hyperparameters to tune: 
