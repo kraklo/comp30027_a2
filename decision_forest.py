@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from data_preprocessing import *
+from feature_selection import *
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split, cross_val_score, RandomizedSearchCV
 
@@ -36,14 +37,14 @@ def run_decision_tree(train_df, test_df):
     return test_df
 
 
-def run_random_forest(train_df):
-    clf = RandomForestClassifier(criterion='entropy')
+def run_random_forest(train_df_features, train_df_labels, test_df):
+    clf = RandomForestClassifier(criterion='entropy', max_features='log2', n_estimators=200)
     # clf1 = RandomForestClassifier(criterion='log_loss')
     # clf2 = RandomForestClassifier(criterion='gini')
     # clf3 = RandomForestClassifier()
 
-    train_df_labels = train_df['imdb_score_binned']
-    train_df_features = train_df.drop('imdb_score_binned', axis=1)
+    # train_df_labels = train_df['imdb_score_binned']
+    # train_df_features = train_df.drop('imdb_score_binned', axis=1)
     score = cross_val_score(clf, train_df_features, train_df_labels, cv=5)
     print(score.mean()) # highest accuracy with training data 
     # score = cross_val_score(clf1, train_df_features, train_df_labels, cv=5)
@@ -53,10 +54,12 @@ def run_random_forest(train_df):
     # score = cross_val_score(clf3, train_df_features, train_df_labels, cv=5)
     # print(score.mean())
 
-    # clf.fit(train_df_features, train_df_labels)
-    # predictions = clf.predict(test_df)
-    # test_df['imdb_score_binned'] = predictions.tolist()
-    # return test_df
+    clf.fit(train_df_features, train_df_labels)
+    predictions = clf.predict(test_df)
+    test_df['imdb_score_binned'] = predictions.tolist()
+    return test_df
+
+
 
 # from https://scikit-learn.org/stable/auto_examples/ensemble/plot_ensemble_oob.html
 def graph_rf(train_df):
@@ -128,12 +131,30 @@ def graph_rf(train_df):
 def main():
     
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
+    train_df_labels = train_df_minmax['imdb_score_binned']
+    train_df_features = train_df_minmax.drop('imdb_score_binned', axis=1)
     #print(train_df_minmax)
     # test_df_predicted = run_decision_tree(train_df_minmax, test_df_minmax)
     # print(test_df_predicted[['id', 'imdb_score_binned']])
-    # test_df_predicted.to_csv('out.csv', columns=['id', 'imdb_score_binned'], index=False)
-    #run_random_forest(train_df_minmax)
-    graph_rf(train_df_minmax)
+    # test_df_predicted.to_csv('dt1.csv', columns=['id', 'imdb_score_binned'], index=False)
+
+    # pred = run_random_forest(train_df_minmax, test_df_minmax)
+    # pred.to_csv('rf1.csv', columns=['id', 'imdb_score_binned'], index=False)
+    #graph_rf(train_df_minmax)
+
+    # with feature selection
+    # train_df_pca, test_df_pca = pca(train_df_minmax, test_df_minmax)
+    # pred_pca = run_random_forest(train_df_pca, train_df_labels, test_df_pca)
+    # print(train_df_pca)
+    # pred_pca.to_csv('rf_pca.csv', columns=['id', 'imdb_score_binned'], index=False)
+
+    train_df_lin, test_df_lin = lin_correlation(train_df_minmax, test_df_minmax)
+    pred_lin = run_random_forest(train_df_lin, train_df_labels, test_df_lin)
+    pred_lin.to_csv('rf_corr.csv', columns=['id', 'imdb_score_binned'], index=False)
+
+    
+
+
     
 
 

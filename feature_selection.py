@@ -23,7 +23,9 @@ THRESHOLD_DT = 0.01
 
 # dimensionality reduction through selecting features with linear correlation above threshold. simplest and most intuitive but: correlation does not imply causality!
 # static, done before input into learner 
-def lin_correlation(train_df):
+def lin_correlation(train_df, test_df):
+
+    features = train_df.drop('imdb_score_binned', axis=1)
 
     # Calculate linear correlation of each feature to the class label, in descending order
     correlations = pd.DataFrame(train_df.corr()['imdb_score_binned'].sort_values(ascending=False))
@@ -31,29 +33,55 @@ def lin_correlation(train_df):
     print(correlations)
 
     # Plot all correlations to choose a threshold value: just before the graph flattens out
-    correlations.plot()
-    plt.xlabel('Column Index')
-    plt.ylabel('Correlation')
-    plt.title('Correlation of each feature with imdb_score_binned')
-    plt.show()
+    # correlations.plot()
+    # plt.xlabel('Column Index')
+    # plt.ylabel('Correlation')
+    # plt.title('Correlation of each feature with imdb_score_binned')
+    # plt.show()
 
     # Features which have a correlation with the class label column greater than the chosen threshold 
-    df_selected = correlations[correlations['Correlation with imdb_score_binned'] > THRESHOLD_CORR]
-    print(df_selected, df_selected.count())
+    selected_features = correlations[correlations['Correlation with imdb_score_binned'] > THRESHOLD_CORR]
 
-    return df_selected 
+    print("count=", selected_features.count())
+    print(selected_features.index)
+    train_df_selected = features.copy()
+    test_df_selected = test_df.copy()
+
+    for feature in features:
+        if (feature not in selected_features.index):
+            if (feature == 'id'): 
+                continue
+            
+            train_df_selected = train_df_selected.drop(columns=[feature])
+            test_df_selected = test_df_selected.drop(columns=[feature])
+
+    # print(train_df_selected)
+    # print(test_df_selected)
+
+    return train_df_selected, test_df_selected
+
+
+
+
+
+    # return df_selected 
 
 
 # dimensionality reduction according to explained variance 
 # static
-def pca(train_df):
+def pca(train_df, test_df):
 
     # Remove class label column
     train_df_features = train_df.drop('imdb_score_binned', axis=1)
     train_df_labels = train_df['imdb_score_binned']
 
+    # remove id column and concat to the end again after pca 
+    id_column = train_df_features['id']
+    train_df_features_no_id = train_df_features.drop(columns=['id'])
+    test_df_no_id = test_df.drop(columns=['id'])
+
     # Fit PCA model to the training data and calculate the cumulative variance ratio i.e., how much variance is explained by n-1 principal components. 
-    pca = PCA().fit(train_df_features)
+    pca = PCA().fit(train_df_features_no_id)
     cumulative_variance_ratio = np.cumsum(pca.explained_variance_ratio_)
 
     # Plot to observe number of components such that maximal variance is explained, but not maximising computational time. 
@@ -70,8 +98,21 @@ def pca(train_df):
 
     # Choose n_components based on graph
     pca = PCA(n_components=N_COMPONENTS) 
-    train_df_reduced = pd.DataFrame(pca.fit_transform(train_df_features))
-    return train_df_reduced
+    train_df_reduced = pd.DataFrame(pca.fit_transform(train_df_features_no_id))
+    train_df_reduced = pd.concat([id_column, train_df_reduced], axis=1)
+
+    test_df_reduced = pd.DataFrame(pca.fit_transform(test_df_no_id))
+    test_df_reduced = pd.concat([id_column, test_df_reduced], axis=1)
+
+
+    # convert all column names to strings
+    train_df_reduced.columns = train_df_reduced.columns.astype(str)
+    test_df_reduced.columns = test_df_reduced.columns.astype(str)
+
+    train_df_reduced = handle_missing(train_df_reduced)
+    test_df_reduced = handle_missing(test_df_reduced)
+
+    return train_df_reduced, test_df_reduced
 
 
 # forward Sequential Feature Selection (wrapper)
@@ -178,11 +219,12 @@ def main():
     
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
 
-    #train_df_minmax_corr = lin_correlation(train_df_minmax)
+    train_df_minmax_corr = lin_correlation(train_df_minmax, test_df_minmax)
+    print(train_df_minmax_corr)
     #train_df_minmax_pca = pca(train_df_minmax)
     knn = KNeighborsClassifier(n_neighbors=5)
     #filtering(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'], 10, 300, 10, knn)
-    selection_dt(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'])
+    # selection_dt(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'])
     
 
 
