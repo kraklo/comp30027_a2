@@ -39,7 +39,7 @@ def main():
     # print(train_df_pca)
     # pred_pca.to_csv('p_pca.csv', columns=['id', 'imdb_score_binned'], index=False)
 
-    # All of these just give me all 2s as predictions like SVM
+    # All of these just give me all 2s as predictions like SVM??
 
 
 
