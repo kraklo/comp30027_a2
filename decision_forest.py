@@ -126,6 +126,9 @@ def graph_rf(train_df):
     plt.legend(loc="upper right")
     plt.show()
 
+def random_forest():
+    # 1a) MinMax-Scaled 
+    return 
 
 
 def main():

@@ -30,7 +30,7 @@ def lin_correlation(train_df, test_df):
     # Calculate linear correlation of each feature to the class label, in descending order
     correlations = pd.DataFrame(train_df.corr()['imdb_score_binned'].sort_values(ascending=False))
     correlations.columns = ['Correlation with imdb_score_binned']
-    print(correlations)
+    # print(correlations)
 
     # Plot all correlations to choose a threshold value: just before the graph flattens out
     # correlations.plot()
@@ -42,8 +42,8 @@ def lin_correlation(train_df, test_df):
     # Features which have a correlation with the class label column greater than the chosen threshold 
     selected_features = correlations[correlations['Correlation with imdb_score_binned'] > THRESHOLD_CORR]
 
-    print("count=", selected_features.count())
-    print(selected_features.index)
+    # print("count=", selected_features.count())
+    # print(selected_features.index)
     train_df_selected = features.copy()
     test_df_selected = test_df.copy()
 
