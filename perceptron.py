@@ -13,13 +13,16 @@ def run_perceptron(features, labels, test_df):
     print("hello")
     clf = Perceptron(random_state=RANDOM_STATE)
 
-    filtering(features, labels, 20, 300, 20, clf)
+    #filtering(features, labels, 20, 300, 20, clf)
+    # uncomment if want kbest 
+    selected_features_train, selected_features_test = select_kbest_features(100, f_classif, features, labels, test_df, clf)
 
-    clf.fit(features, labels)
-    print(clf.score(features, labels))
+    clf.fit(selected_features_train, labels)
+    print(clf.score(selected_features_train, labels))
 
-    predictions = pd.DataFrame(clf.predict(test_df))
+    predictions = pd.DataFrame(clf.predict(selected_features_test))
     predictions.columns = ['imdb_score_binned']
+    print(predictions)
     test_df = pd.concat([test_df, predictions], axis=1)
     return test_df
 
@@ -45,8 +48,12 @@ def main():
 
     
 
-    # All of these just give me all 2s as predictions like SVM??
+    # All of the above just give me all 2s as predictions like SVM??
 
+    # test_df_predicted = run_perceptron(train_df_features, train_df_labels, test_df_minmax)
+    # print(test_df_predicted)
+    # test_df_predicted.to_csv('p_kbest.csv', columns=['id', 'imdb_score_binned'], index=False)
+    # Gives 64% accuracy on kaggle
 
 
 

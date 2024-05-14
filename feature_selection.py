@@ -197,6 +197,7 @@ def filtering(features, labels, min_k, max_k, k_step, classifier):
     
     for label, kbest in ensemble_methods:
         for i in range(min_k, max_k + 1, k_step):
+            print("label kbest with ", i)
             kbest.set_params(k=i)
             res = kbest.fit_transform(features, labels)
 
@@ -205,6 +206,7 @@ def filtering(features, labels, min_k, max_k, k_step, classifier):
             accuracy[label].append((i, acc))
 
     for label, acc in accuracy.items():
+        print("zip")
         xs, ys = zip(*acc)
         plt.plot(xs, ys, label=label)
 
@@ -218,15 +220,25 @@ def filtering(features, labels, min_k, max_k, k_step, classifier):
     plt.show()
 
 
+# based on filtering graph results
+def select_kbest_features(k, metric, features, labels, test_df, classifier):
+    kbest = SelectKBest(metric, k=k)
+    new_features = kbest.fit_transform(features, labels)
+    new_features_test = kbest.transform(test_df)
+    #print(new_features)
+    return new_features, new_features_test
+
+
+
 def main():
     
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
 
-    train_df_minmax_corr = lin_correlation(train_df_minmax, test_df_minmax)
-    print(train_df_minmax_corr)
+    # train_df_minmax_corr = lin_correlation(train_df_minmax, test_df_minmax)
+    # print(train_df_minmax_corr)
     #train_df_minmax_pca = pca(train_df_minmax)
     knn = KNeighborsClassifier(n_neighbors=5)
-    #filtering(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'], 10, 300, 10, knn)
+    filtering(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'], 10, 300, 10, knn)
     # selection_dt(train_df_minmax.drop('imdb_score_binned', axis=1), train_df_minmax['imdb_score_binned'])
     
 
