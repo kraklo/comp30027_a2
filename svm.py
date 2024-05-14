@@ -27,21 +27,25 @@ def run_svm(train_df, test_df):
     train_df_labels = train_df['imdb_score_binned']
     train_df_features = train_df.drop('imdb_score_binned', axis=1)
 
-    print(train_df_features)
-
-    clf.fit(train_df_features, train_df_labels)
+    # clf.fit(train_df_features, train_df_labels)
 
     # cross validation split
-    scores = cross_val_score(clf, train_df_features, train_df_labels, cv=10)
-    print(scores.mean())
+    # scores = cross_val_score(clf, train_df_features, train_df_labels, cv=10)
+    # print(scores.mean())
     C = 1.0  # SVM regularization parameter
 
-    # models = (svm.SVC(kernel='linear', C=C),
-    #       svm.LinearSVC(C=C, max_iter=10000),
-    #       svm.SVC(kernel='rbf', gamma=0.7, C=C),
-    #       svm.SVC(kernel='poly', degree=3, gamma='auto', C=C))
+
+    models = (svm.SVC(kernel='linear', C=C),
+          svm.LinearSVC(C=C, max_iter=10000),
+          svm.SVC(kernel='rbf', gamma=0.7, C=C),
+          svm.SVC(kernel='poly', degree=3, gamma='auto', C=C))
 
     # models = (clf.fit(train_df_features, train_df_labels) for clf in models)
+
+    for clf in models:
+        print("here")
+        scores = cross_val_score(clf, train_df_features, train_df_labels, cv=10)
+        print("score for model = ", scores.mean())
 
 
     
