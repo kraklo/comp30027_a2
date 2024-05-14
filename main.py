@@ -26,7 +26,7 @@ def main():
     # b) Principal Component Analysis
     train_df_features_minmax_pca, test_df_minmax_pca = lin_correlation(train_df_minmax, test_df_minmax)
 
-    # c) Decision Tree feature importances (maybe static?)
+    # c) Decision Tree feature importances (maybe static, maybe dynamic?)
 
     # Dynamic Feature Selection: integrated into classifiers
 
