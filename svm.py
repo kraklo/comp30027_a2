@@ -28,6 +28,10 @@ def tune_params(features, labels):
                 'kernel': ['rbf']
                 }  
     
+    # param_grid1 = {'C': [0.1, 1],
+    #                'gamma': [1, 0.1]
+    #             }  
+    
     param_grid2 = {'C': [0.1, 1, 10],  
                 'kernel': ['poly'],
                 'degree': [3, 4, 5],
@@ -43,15 +47,31 @@ def tune_params(features, labels):
     grid2.fit(features, labels)
     print("Best parameters for SVC with polynomial kernel: ", grid2.best_params_)
 
+    grid1_result = grid1.cv_results_
+    grid2_result = grid2.cv_results_
+
+    # Plot param tuning results on heatmap 
+    mean_scores = grid1_result['mean_test_score'].reshape(len(param_grid1['C']), len(param_grid1['gamma']))
+    plt.imshow(mean_scores)
+    plt.title("GridSearchCV Accuracy Scores for RBF Kernel")
+    plt.xlabel("C")
+    plt.ylabel("gamma")
+    plt.show()
+
+    mean_scores_2 = grid2_result['mean_test_score'].reshape(len(param_grid2['C']), len(param_grid2['degree']))
+    plt.imshow(mean_scores_2)
+    plt.title("GridSearchCV Accuracy Scores for Polynomial Kernel")
+    plt.xlabel("C")
+    plt.ylabel("degree")
+    plt.show()
+    
+
     if (grid1.best_score_ > grid2.best_score_):
         return RBF, grid1.best_params_
     
     else:
         return POLY, grid2.best_params_
 
-
-
-# Worth doing holdout to determine whether SVM converges to a solution i.e., has good metrics (accuracy, F1, etc.) with different normalisations. 
 
 # 1. SVM with all training data
 def run_svm(train_df_features, train_df_labels, test_df):
