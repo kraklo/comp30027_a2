@@ -39,7 +39,7 @@ def run_knn(features, labels, test_df):
     predictions = pd.DataFrame(knn.predict(selected_features_test))
     predictions.columns = ['imdb_score_binned']
     test_df = pd.concat([test_df.copy(), predictions], axis=1)
-    test_df.to_csv('CSVs/knn.csv', columns=['id', 'imdb_score_binned'], index_label=False)
+    test_df.to_csv('CSVs/knn.csv', columns=['id', 'imdb_score_binned'], index=False)
     return test_df
 
 

@@ -11,7 +11,7 @@ def run_stacking(knn_result, svm_result, decision_forest_result, neural_network_
 
     test_df['imdb_score_binned'] = test_df['mean_label'].apply(lambda x: mean_label(x))
 
-    test_df.to_csv('CSVs/stacking.csv', columns=['id', 'imdb_score_binned'], index_label=False)
+    test_df.to_csv('CSVs/stacking.csv', columns=['id', 'imdb_score_binned'], index=False)
 
     return test_df
 

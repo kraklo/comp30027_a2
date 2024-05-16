@@ -89,7 +89,7 @@ def run_svm(train_df_features, train_df_labels, test_df):
     predictions.columns = ['imdb_score_binned']
 
     test_df = pd.concat([test_df.copy(), predictions], axis=1)
-    test_df.to_csv('CSVs/svm.csv', columns=['id', 'imdb_score_binned'], index_label=False)
+    test_df.to_csv('CSVs/svm.csv', columns=['id', 'imdb_score_binned'], index=False)
 
     return test_df
 

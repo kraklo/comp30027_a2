@@ -105,7 +105,7 @@ def run_neural_network(model, device, test):
     test = test.copy()
     test['imdb_score_binned'] = pred
 
-    test.to_csv('CSVs/neural_network.csv', columns=['id', 'imdb_score_binned'], index_label=False)
+    test.to_csv('CSVs/neural_network.csv', columns=['id', 'imdb_score_binned'], index=False)
 
     return test
 
