@@ -101,7 +101,6 @@ def preprocess():
 
 
 def main():
-    
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
 
 

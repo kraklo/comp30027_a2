@@ -14,6 +14,7 @@ from sklearn.model_selection import GridSearchCV, train_test_split, cross_val_sc
 
 RANDOM_STATE = 123
 
+
 def run_decision_tree(train_df, test_df):
     clf = DecisionTreeClassifier(criterion='entropy')
     # clf1 = DecisionTreeClassifier(criterion='log_loss')
@@ -45,8 +46,8 @@ def run_random_forest(train_df_features, train_df_labels, test_df):
 
     # train_df_labels = train_df['imdb_score_binned']
     # train_df_features = train_df.drop('imdb_score_binned', axis=1)
-    score = cross_val_score(clf, train_df_features, train_df_labels, cv=5)
-    print(score.mean()) # highest accuracy with training data 
+    # score = cross_val_score(clf, train_df_features, train_df_labels, cv=5)
+    # print(score.mean()) # highest accuracy with training data
     # score = cross_val_score(clf1, train_df_features, train_df_labels, cv=5)
     # print(score.mean())
     # score = cross_val_score(clf2, train_df_features, train_df_labels, cv=5)
@@ -56,14 +57,14 @@ def run_random_forest(train_df_features, train_df_labels, test_df):
 
     clf.fit(train_df_features, train_df_labels)
     predictions = clf.predict(test_df)
+    test_df = test_df.copy()
     test_df['imdb_score_binned'] = predictions.tolist()
+    test_df.to_csv('CSVs/decision_forest.csv', columns=['id', 'imdb_score_binned'], index_label=False)
     return test_df
-
 
 
 # from https://scikit-learn.org/stable/auto_examples/ensemble/plot_ensemble_oob.html
 def graph_rf(train_df):
-
     train_df_labels = train_df['imdb_score_binned']
     train_df_features = train_df.drop('imdb_score_binned', axis=1)
 
@@ -126,13 +127,8 @@ def graph_rf(train_df):
     plt.legend(loc="upper right")
     plt.show()
 
-def random_forest():
-    # 1a) MinMax-Scaled 
-    return 
-
 
 def main():
-    
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
     train_df_labels = train_df_minmax['imdb_score_binned']
     train_df_features = train_df_minmax.drop('imdb_score_binned', axis=1)
@@ -154,11 +150,6 @@ def main():
     train_df_lin, test_df_lin = lin_correlation(train_df_minmax, test_df_minmax)
     pred_lin = run_random_forest(train_df_lin, train_df_labels, test_df_lin)
     pred_lin.to_csv('rf_corr.csv', columns=['id', 'imdb_score_binned'], index=False)
-
-    
-
-
-    
 
 
 if __name__ == '__main__':

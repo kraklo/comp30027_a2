@@ -33,15 +33,15 @@ def tune_params(features, labels):
                 'degree': [3, 4, 5],
                 }  
     
-    grid1 = GridSearchCV(clf, param_grid1, refit = True, verbose = 3) 
-    grid2 = GridSearchCV(clf, param_grid2, refit = True, verbose = 3) 
+    grid1 = GridSearchCV(clf, param_grid1, refit = True)
+    grid2 = GridSearchCV(clf, param_grid2, refit = True)
     
     #fitting the model for grid search 
-    grid1.fit(features, labels) 
-    print("Best parameters for SVC with rbf kernel: ", grid1.best_params_)
+    grid1.fit(features, labels)
+    # print("Best parameters for SVC with rbf kernel: ", grid1.best_params_)
 
     grid2.fit(features, labels)
-    print("Best parameters for SVC with polynomial kernel: ", grid2.best_params_)
+    # print("Best parameters for SVC with polynomial kernel: ", grid2.best_params_)
 
     if (grid1.best_score_ > grid2.best_score_):
         return RBF, grid1.best_params_
@@ -68,9 +68,11 @@ def run_svm(train_df_features, train_df_labels, test_df):
     predictions = pd.DataFrame(clf.predict(test_df))
     predictions.columns = ['imdb_score_binned']
 
-    test_df = pd.concat([test_df, predictions], axis=1)
+    test_df = pd.concat([test_df.copy(), predictions], axis=1)
+    test_df.to_csv('CSVs/svm.csv', columns=['id', 'imdb_score_binned'], index_label=False)
 
     return test_df
+
 
 def support_vector_machine(train_df_features_minmax, train_df_labels_minmax, test_df_minmax, train_df_features_std, train_df_labels_std, test_df_std, train_df_features_minmax_corr, test_df_minmax_corr):
         # 1. SVM
@@ -95,6 +97,7 @@ def support_vector_machine(train_df_features_minmax, train_df_labels_minmax, tes
 
     # Produce CSV files of predictions for accuracy testing on Kaggle
     test_df_predicted_minmax_corr.to_csv('svm_minmax_corr.csv', columns=['id', 'imdb_score_binned'], index=False)
+
 
 # For file testing: 
 def main():

@@ -1,51 +1,36 @@
-from sklearn.ensemble import StackingClassifier, RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import Perceptron
-from sklearn import svm
-from sklearn.neighbors import KNeighborsClassifier
-
-from feature_selection import *
-from data_preprocessing import *
-
-RANDOM_STATE = 123
-
-def run_stacking(features, labels, test):
-
-    # this is pretty much just base models with optimised parameters: is there a way to stack where each takes a different dataset? dont think thats possible. cuz they all perform best with diff feature selection
-    # get rid of magic numbers!
-    estimators = [
-        ('knn', KNeighborsClassifier(n_neighbors=106)),
-        ('rf', RandomForestClassifier(n_estimators=200, criterion='entropy', max_features='log2', random_state=RANDOM_STATE)),
-        ('perceptron', Perceptron(random_state=RANDOM_STATE)),
-        ('svm', svm.SVC(C=0.1, gamma=1, kernel='rbf', random_state=RANDOM_STATE))
-    ]
-
-    clf = StackingClassifier(estimators=estimators)
-    clf.fit(features, labels) #is it meant to be fit_transform??
-    score = cross_val_score(clf, features, labels, cv=5)
-    print(score.mean())
-
-    print(clf.predict(test))
+import pandas as pd
 
 
+def run_stacking(knn_result, svm_result, decision_forest_result, neural_network_result):
+    test_df = knn_result.copy()
 
+    test_df['mean_label'] = (knn_result['imdb_score_binned'] +
+                             svm_result['imdb_score_binned'] +
+                             decision_forest_result['imdb_score_binned'] +
+                             neural_network_result['imdb_score_binned'])
+
+    test_df['imdb_score_binned'] = test_df['mean_label'].apply(lambda x: mean_label(x))
+
+    test_df.to_csv('CSVs/stacking.csv', columns=['id', 'imdb_score_binned'], index_label=False)
+
+    return test_df
+
+
+def mean_label(label_sum):
+    mean = label_sum / 4
+
+    if mean % 1 < 0.5:
+        return int(mean)
+    else:
+        return int(mean) + 1
 
 
 def main():
-    train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
-    train_df_labels = train_df_minmax['imdb_score_binned']
-    train_df_features = train_df_minmax.drop('imdb_score_binned', axis=1)
-
-    #train_df_lin, test_df_lin = lin_correlation(train_df_minmax, test_df_minmax)
-
-    run_stacking(train_df_features, train_df_labels, test_df_minmax)
-
-
-
-
-
-
-
+    knn_result = pd.read_csv('CSVs/knn.csv')
+    svm_result = pd.read_csv('CSVs/svm.csv')
+    decision_forest_result = pd.read_csv('CSVs/decision_forest.csv')
+    neural_network_result = pd.read_csv('CSVs/neural_network.csv')
+    run_stacking(knn_result, svm_result, decision_forest_result, neural_network_result)
 
 
 if __name__ == '__main__':

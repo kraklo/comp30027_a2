@@ -11,8 +11,8 @@ from feature_selection import *
 
 RANDOM_STATE = 123
 
+
 def run_knn(features, labels, test_df):
-    k_neighbours = np.arange(2, 200, 2)
     scores = {}
     #https://medium.com/@agrawalsam1997/hyperparameter-tuning-of-knn-classifier-a32f31af25c7
     # for k in k_neighbours:
@@ -29,24 +29,18 @@ def run_knn(features, labels, test_df):
     # plt.show()
 
     knn = KNeighborsClassifier(n_neighbors=106) # from graph
-    #filtering(features, labels, 10, 300, 20, knn)
+    # filtering(features, labels, 10, 300, 20, knn)
     # best = 30 features
     selected_features_train, selected_features_test = select_kbest_features(30, f_classif, features, labels, test_df, knn)
-
     score = cross_val_score(knn, features, labels, cv=5)
-    print(score.mean())
     knn.fit(selected_features_train, labels)
     # print(clf.score(selected_features_train, labels))
 
     predictions = pd.DataFrame(knn.predict(selected_features_test))
     predictions.columns = ['imdb_score_binned']
-    print(predictions)
-    test_df = pd.concat([test_df, predictions], axis=1)
+    test_df = pd.concat([test_df.copy(), predictions], axis=1)
+    test_df.to_csv('CSVs/knn.csv', columns=['id', 'imdb_score_binned'], index_label=False)
     return test_df
-
-
-
-    #return test_df
 
 
 def main():
@@ -57,13 +51,6 @@ def main():
     test_df_predicted = run_knn(train_df_features, train_df_labels, test_df_minmax)
     print(test_df_predicted)
     test_df_predicted.to_csv('knn_kbest.csv', columns=['id', 'imdb_score_binned'], index=False)
-
-
-
-
-    
-
-
 
 
 if __name__ == '__main__':
