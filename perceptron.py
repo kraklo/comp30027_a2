@@ -1,9 +1,4 @@
 from sklearn.linear_model import Perceptron
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from data_preprocessing import *
 from feature_selection import *
 
 
