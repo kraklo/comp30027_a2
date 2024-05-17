@@ -19,8 +19,8 @@ def main():
     print("Running knn...")
     knn_result = run_knn(train_minmax, train_labels, test_df_minmax)
 
-    # print("Running svm...")
-    # svm_result = run_svm(train_minmax, train_labels, test_df_minmax)
+    print("Running svm...")
+    svm_result = run_svm(train_minmax, train_labels, test_df_minmax)
 
     print("Running decision tree...")
     decision_tree_result = run_decision_tree(train_df_minmax, test_df_minmax)
@@ -35,7 +35,7 @@ def main():
     neural_network_result = run_neural_network(model, device, test_df_std)
 
     print("Running stacking...")
-    stacking_result = run_stacking(knn_result, svm_result, decision_forest_result, neural_network_result)
+    stacking_result = run_stacking(knn_result, svm_result, decision_tree_result, decision_forest_result, neural_network_result)
 
 
 if __name__ == '__main__':

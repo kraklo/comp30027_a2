@@ -4,10 +4,11 @@ from torch import nn
 from feature_selection import *
 import numpy as np
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 
-HIDDEN_LAYER_SIZE = 128
+HIDDEN_LAYER_SIZE = 32
 BATCHES = 50
-EPOCHS = 1000
+EPOCHS = 200
 LEARNING_RATE = 0.002
 
 
@@ -113,9 +114,10 @@ def run_neural_network(model, device, test):
 def validate():
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
 
-    X, y = train_test_split(train_df_std, train_size=0.9)
+    X, y = train_test_split(train_df_std, train_size=0.9, random_state=1984)
 
-    result = neural_net(X, y.drop('imdb_score_binned', axis=1))
+    model, device = neural_net(X)
+    result = run_neural_network(model, device, y.drop('imdb_score_binned', axis=1))
     accuracy = np.sum(result['imdb_score_binned'] == y['imdb_score_binned']) / y.shape[0]
 
     return accuracy
@@ -125,8 +127,22 @@ def validate():
 
 def main():
     train_df_minmax, test_df_minmax, train_df_std, test_df_std = preprocess()
-    result = neural_net(train_df_std, test_df_std)
-    result.to_csv("CSVs/neural_network.csv", columns=['id', 'imdb_score_binned'], index=False)
+    global HIDDEN_LAYER_SIZE
+    epochs = [32, 64, 128, 160, 256, 512]
+    accs = []
+    for epoch in epochs:
+        HIDDEN_LAYER_SIZE = epoch
+        accs.append(validate())
+
+    plt.plot(epochs, accs)
+    plt.xlabel("Number of neurons")
+    plt.ylabel("Accuracy")
+    plt.title("Neural Network: Varying Number of Hidden Layer Neurons")
+    plt.show()
+
+    # model, device = neural_net(train_df_std)
+    # result = run_neural_network(model, device, test_df_std)
+    # result.to_csv("CSVs/neural_network.csv", columns=['id', 'imdb_score_binned'], index=False)
 
 
 if __name__ == '__main__':
